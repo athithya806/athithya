@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Project Management System</title>
+    <link rel="stylesheet" href="styles.css"> <!-- External CSS file for better organization -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            display: flex;
+            height: 100vh;
+            background: url('https://media.licdn.com/dms/image/D4E0BAQE-lhztou6fuQ/company-logo_200_200/0/1667780733211?e=2147483647&v=beta&t=yKgZ5y6S-NzmUy9SRRrm_juLSdl2gzxENeGmFdvYP68') no-repeat center center fixed;
+            background-size: contain; /* Adjust this to cover or contain based on your preference */
+            color: #333;
+            position: relative;
+        }
+        
+
+        @keyframes gradientBackground {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        @keyframes sidebarBackgroundAnimation {
+            0% {
+                background-color: #9B5DE5; /* Crystal Violet */
+            }
+            50% {
+                background-color: #6A1B9A; /* Darker Violet */
+            }
+            100% {
+                background-color: #9B5DE5; /* Crystal Violet */
+            }
+        }
+        .sidebar {
+            width: 250px;
+            background-color: #9B5DE5; /* Initial Crystal Violet color */
+           
+            background-size: cover;
+            background-blend-mode: overlay;
+            color: white;
+            position: fixed;
+            height: 100%;
+            top: 0;
+            left: 0;
+            padding: 20px;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            animation: sidebarBackgroundAnimation 5s ease-in-out infinite;
+        }
+
+        .sidebar h2 {
+            margin-top: 0;
+            font-size: 24px;
+        }
+
+        .sidebar a {
+            color: white;
+            text-decoration: none;
+            display: block;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 5px 0;
+            transition: background-color 0.3s;
+        }
+
+        .sidebar a:hover {
+            background-color: #555;
+        }
+
+        .main-content {
+            margin-left: 250px; /* Sidebar width */
+            padding: 20px;
+            width: calc(100% - 250px); /* Remaining width */
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+            overflow: auto;
+            transition: background-color 2s;
+        }
+
+        .main-content:hover {
+            background-color: #f1f1f1;
+        }
+
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            text-align: center;
+            color: #000000;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+
+        th {
+            background-color: #f2f2f2;
+            text-align: left;
+        }
+
+        .add-button, .save-button {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .add-button a, .save-button button {
+            text-decoration: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .add-button a {
+            background-color: #4CAF50; /* Green */
+        }
+
+        .save-button button {
+            background-color: #2196F3; /* Blue */
+        }
+
+        .update-button {
+            background-color: #4CAF50; /* Green */
+            color: white;
+        }
+
+        .delete-button {
+            background-color: #f44336; /* Red */
+            color: white;
+        }
+
+        .button-container {
+            display: flex;
+            gap: 10px; /* Space between the buttons */
+        }
+
+        .filter {
+            margin-bottom: 20px;
+        }
+
+        .filter input {
+            padding: 5px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+
+        .logout-link {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #FF4C4C;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: background-color 0.5s;
+        }
+
+        .logout-link:hover {
+            background-color: #d43f3f;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h2>Project Management System</h2>
+        <!-- Replace these with actual table links -->
+        {% for table in tables %}
+            <a href="{{ url_for('show_table', table_name=table) }}">{{ table }}</a>
+        {% endfor %}
+        <a class="logout-link" href="{{ url_for('logout') }}">Logout</a>
+    </div>
+</body>
+</html>
+

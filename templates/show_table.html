@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Show Table</title>
+    <link rel="stylesheet" href="styles.css"> <!-- External CSS file -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            display: flex;
+            height: 100vh;
+            background: url('https://media.licdn.com/dms/image/D4E0BAQE-lhztou6fuQ/company-logo_200_200/0/1667780733211?e=2147483647&v=beta&t=yKgZ5y6S-NzmUy9SRRrm_juLSdl2gzxENeGmFdvYP68') no-repeat center center fixed;
+            background-size: cover; /* Adjust this to fit or cover */
+            color: #333;
+            overflow: hidden; /* Prevent scrollbars during transition */
+        }
+
+        @keyframes sidebarBackgroundAnimation {
+            0% {
+                background-color: #9B5DE5; /* Crystal Violet */
+            }
+            50% {
+                background-color: #6A1B9A; /* Darker Violet */
+            }
+            100% {
+                background-color: #9B5DE5; /* Crystal Violet */
+            }
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: #9B5DE5; /* Initial Crystal Violet color */
+            color: white;
+            position: fixed;
+            height: 100%;
+            top: 0;
+            left: 0;
+            padding: 20px;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            animation: sidebarBackgroundAnimation 5s ease-in-out infinite;
+            transition: transform 0.3s ease-in-out; /* Smooth transition */
+        }
+
+        .sidebar.hidden {
+            transform: translateX(-250px); /* Hide the sidebar */
+        }
+
+        .main-content {
+            margin-left: 250px; /* Sidebar width */
+            padding: 20px;
+            width: calc(100% - 250px); /* Remaining width */
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            height: 100vh;
+            overflow: auto;
+            transition: margin-left 0.3s ease-in-out; /* Smooth transition */
+        }
+
+        .main-content.expanded {
+            margin-left: 0; /* Adjust for hidden sidebar */
+            width: 100%; /* Full width */
+        }
+
+        .toggle-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background-color: #2196F3; /* Blue */
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            z-index: 1000; /* Ensure it's above other elements */
+        }
+
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            text-align: center;
+            color: #000000;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+
+        th {
+            background-color: #f2f2f2;
+            text-align: left;
+        }
+
+        .add-button, .save-button {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .add-button a, .save-button button {
+            text-decoration: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .add-button a {
+            background-color: #4CAF50; /* Green */
+        }
+
+        .save-button button {
+            background-color: #2196F3; /* Blue */
+        }
+
+        .update-button {
+            background-color: #4CAF50; /* Green */
+            color: white;
+        }
+
+        .delete-button {
+            background-color: #f44336; /* Red */
+            color: white;
+        }
+
+        .button-container {
+            display: flex;
+            gap: 10px; /* Space between the buttons */
+        }
+
+        .filter {
+            margin-bottom: 20px;
+        }
+
+        .filter input {
+            padding: 5px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+
+        .logout-link {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #FF4C4C;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: background-color 0.5s;
+        }
+
+        .logout-link:hover {
+            background-color: #d43f3f;
+        }
+    </style>
+</head>
+<body>
+    <button class="toggle-button" id="toggle-button">Toggle Sidebar</button>
+
+    <div class="sidebar" id="sidebar">
+        <h2>Project Management System</h2>
+        <!-- Replace these with actual table links -->
+        {% for table in tables %}
+            <a href="{{ url_for('show_table', table_name=table) }}">{{ table }}</a>
+        {% endfor %}
+        <a class="logout-link" href="{{ url_for('logout') }}">Logout</a>
+    </div>
+
+    <div class="main-content" id="main-content">
+        <h1>Table: {{ table_name }}</h1>
+
+        <div class="add-button">
+            <a href="{{ url_for('add_record', table_name=table_name) }}">Add New Record</a>
+        </div>
+
+        <div class="save-button">
+            <button id="save-button">Save Changes</button>
+        </div>
+
+        <div class="filter">
+            <label for="filter-input">Filter: </label>
+            <input type="text" id="filter-input" placeholder="Search...">
+        </div>
+
+        <table id="data-table">
+            <thead>
+                <tr>
+                    {% for column in columns %}
+                    <th>{{ column }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for record in records %}
+                <tr data-id="{{ record.id }}">
+                    {% for column in columns %}
+                    <td contenteditable="{{ is_admin }}" data-column="{{ column }}">{{ record[column] }}</td>
+                    {% endfor %}
+                    <td>
+                        <div class="button-container">
+                            <button class="update-button" data-id="{{ record.id }}">Update</button>
+                            <button class="delete-button" data-id="{{ record.id }}">Delete</button>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <footer>
+        <p>Footer content here. &copy; {{ year }}</p>
+    </footer>
+
+    <script>
+        // Function to set initial original values
+        function setOriginalValues() {
+            document.querySelectorAll('td[contenteditable="true"]').forEach(cell => {
+                if (!cell.hasAttribute('data-original-value')) {
+                    cell.setAttribute('data-original-value', cell.innerText.trim());
+                }
+            });
+        }
+
+        // Function to filter table rows based on input
+        function filterTable() {
+            const filter = document.getElementById('filter-input').value.toLowerCase();
+            const rows = document.querySelectorAll('#data-table tbody tr');
+
+            rows.forEach(row => {
+                const cells = row.querySelectorAll('td');
+                let match = false;
+
+                cells.forEach(cell => {
+                    if (cell.innerText.toLowerCase().includes(filter)) {
+                        match = true;
+                    }
+                });
+
+                row.style.display = match ? '' : 'none';
+            });
+        }
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('main-content');
+
+            sidebar.classList.toggle('hidden');
+            mainContent.classList.toggle('expanded');
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Set the initial original values in contenteditable cells
+            setOriginalValues(); 
+
+            // Handle save button click
+            document.getElementById('save-button').addEventListener('click', () => {
+                const updatedData = [];
+
+                document.querySelectorAll('tr[data-id]').forEach(row => {
+                    const id = row.getAttribute('data-id');
+                    const rowData = { id };
+
+                    row.querySelectorAll('td[contenteditable="true"]').forEach(cell => {
+                        const column = cell.getAttribute('data-column');
+                        const newValue = cell.innerText.trim();
+                        const originalValue = cell.getAttribute('data-original-value').trim();
+
+                        if (newValue !== originalValue) {
+                            rowData[column] = newValue;
+                        }
+                    });
+
+                    if (Object.keys(rowData).length > 1) {
+                        updatedData.push(rowData);
+                    }
+                });
+
+                if (updatedData.length === 0) {
+                    alert('No changes to save.');
+                    return;
+                }
+
+                fetch('{{ url_for("save_changes") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify(updatedData)
+                }).then(response => response.json())
+                  .then(data => {
+                      if (data.success) {
+                          alert('Changes saved successfully.');
+                          // Update original values
+                          setOriginalValues();
+                      } else {
+                          alert('Error saving changes.');
+                      }
+                  }).catch(error => {
+                      console.error('Error:', error);
+                      alert('Error saving changes.');
+                  });
+            });
+
+            // Handle filter input
+            document.getElementById('filter-input').addEventListener('input', filterTable);
+
+            // Handle sidebar toggle button
+            document.getElementById('toggle-button').addEventListener('click', toggleSidebar);
+        });
+    </script>
+</body>
+</html>

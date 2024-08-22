@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Update Table - {{ table_name }}</title>
+</head>
+<body>
+    <h1>Update Records for Table: {{ table_name }}</h1>
+    <form method="post">
+        <table border="1">
+            <thead>
+                <tr>
+                    {% for column in columns %}
+                        <th>{{ column }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    {% for column in columns %}
+                        <td>
+                            <input type="text" name="{{ column }}" value="{{ request.form[column] or '' }}">
+                        </td>
+                    {% endfor %}
+                    <td>
+                        <input type="hidden" name="id" value="{{ request.args.get('id') }}">
+                        <input type="submit" value="Update">
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </form>
+    <a href="{{ url_for('index') }}">Back to Table List</a>
+</body>
+</html>
